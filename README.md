@@ -33,6 +33,7 @@ An interactive Streamlit-based web application that extracts structured financia
 
 ## 🛠️ Technology Stack
 
+
 - **Frontend & Dashboard:** [Streamlit](https://streamlit.io/)
 - **Data Manipulation:** [Pandas](https://pandas.pydata.org/)
 - **Fuzzy Matching:** [RapidFuzz](https://github.com/rapidfuzz/RapidFuzz)
