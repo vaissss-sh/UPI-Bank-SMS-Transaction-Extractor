@@ -154,15 +154,8 @@ merchant_categories = {
 # =====================================================
 
 def get_category(merchant):
-
-    merchant = merchant.upper().strip()
-
-    for key, category in merchant_categories.items():
-
-        if key.upper() in merchant:
-            return category
-
-    return "Miscellaneous"
+    from merchant_pipeline import categorize_merchant
+    return categorize_merchant(merchant)
 
 # =====================================================
 # SMS PARSER
@@ -347,49 +340,12 @@ def extract_info(sms):
                 result["txn_type"] = "Credit"
 
     # --------------------
+    # --------------------
     # MERCHANT
     # --------------------
 
-    merchant = "NaN"
-
-    merchant_patterns = [
-
-        r'for\s+(.*?)\s+on',
-
-        r'trf to (.*?) Ref',
-        r'towards (.*?) UPI',
-        r'paid to (.*?) via',
-        r'paid to (.*?) Ref',
-        r'at (.*?) Ref',
-        r'at (.*?) via',
-        r'to (.*?) Ref',
-        r'transferred to (.*?) Ref',
-        r'spent using UPI at (.*?) Ref'
-
-    ]
-
-
-    for pattern in merchant_patterns:
-
-        match = re.search(
-            pattern,
-            sms,
-            re.IGNORECASE
-        )
-
-        if match:
-
-            merchant = match.group(1).strip()
-
-            merchant = re.sub(
-                r'\s+',
-                ' ',
-                merchant
-            )
-
-            break
-    merchant = merchant.upper().strip()
-
+    from merchant_pipeline import extract_merchant, categorize_merchant
+    merchant, confidence = extract_merchant(sms)
     result["merchant"] = merchant
 
     # --------------------
@@ -397,13 +353,8 @@ def extract_info(sms):
     # --------------------
 
     if merchant != "NaN":
-
-        result["category"] = get_category(
-            merchant
-    )
-
+        result["category"] = categorize_merchant(merchant)
     else:
-
         result["category"] = "NaN"
 
     # --------------------
